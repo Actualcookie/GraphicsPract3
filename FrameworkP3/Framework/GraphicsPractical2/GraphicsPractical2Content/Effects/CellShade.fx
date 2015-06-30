@@ -7,10 +7,6 @@
 float3 LightDirection;
 float4 DiffuseColor;
 float DiffuseStrength = 0.2;
-//Variables Specular
-
-float4 AmbientColor;
-float AmbientIntensity;
 // Matrices for 3D perspective projection 
 float4x4 View, Projection, World, ITWorld;
 //---------------------------------- Input / Output structures ----------------------------------
@@ -65,7 +61,7 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 	float lightStrength = dot(Lnormal, LightDirection);					   //calculate how much light gets reflected.
 	output.Intense = lightStrength;									//setting the Lightstrength to the pixelshader to ease the discretization	
 	//with a set color 
-	output.Color = AmbientColor; 
+	output.Color = DiffuseColor; 
 	return output;
 }
 
@@ -77,7 +73,7 @@ float4 SimplePixelShader(VertexShaderOutput output) : COLOR0
 		return color;
 }
 
-technique Cell
+technique Simple
 {
 	pass Pass0
 	{
