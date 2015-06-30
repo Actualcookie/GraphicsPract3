@@ -26,7 +26,8 @@ namespace GraphicsPractical2
         // Model
         private Model model;
         private Material modelMaterial;
-
+        private Vector4[] lightPosition = new Vector4[10];
+        private Vector4[] diffuseColor= new Vector4[10];
         private Matrix World, ITWorld;
 
         public Game1()
@@ -87,6 +88,38 @@ namespace GraphicsPractical2
             GraphicsDevice.SetRenderTarget(renderTarget);
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
+           /* Vector3 lightdirection = new Vector3(1, 1, 1);
+            effect.Parameters["LightDirection"].SetValue(lightdirection);*/
+           /* FillArray(lightPosition);
+            effect.Parameters["lightPosition"].SetValue(lightPosition);
+            FillArray(diffuseColor);
+            effect.Parameters["diffuseColors"].SetValue(diffuseColor); */
+        }
+
+        public void FillArray(Vector4[] fill)
+        {   
+            Random r = new Random();
+            //generates a array of random variables which act as the light positions and the light colors
+            for(int i=0;i< fill.Length;i++)
+            {
+                Vector4 vary= new Vector4(r.Next(-20,15),r.Next(-20,15),r.Next(-15,25),r.Next(-20,15));
+                fill[i] = vary;             
+            }
+
+        }
+        protected override void Update(GameTime gameTime)
+        {
+            float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
+            
+            // Update the window title
+            this.Window.Title = "XNA Renderer | FPS: " + this.frameRateCounter.FrameRate;
+           //warning flashing lights for status checking only (and or disco parties involving tea)
+            ModelMesh mesh = this.model.Meshes[0];
+            Effect effect = mesh.Effects[0];
+            FillArray(lightPosition);
+            effect.Parameters["lightPosition"].SetValue(lightPosition);
+            FillArray(diffuseColor);
+            effect.Parameters["diffuseColors"].SetValue(diffuseColor); 
 
             //Draw the model
             ModelMesh mesh = this.model.Meshes[0];
@@ -102,6 +135,7 @@ namespace GraphicsPractical2
             Vector3 lightposition = new Vector3(50,50, 50);
 
             effect.Parameters["LightDirection"].SetValue(lightdirection);
+
 
             if(effect.Parameters["LightPosition"] != null)
             effect.Parameters["LightPosition"].SetValue(lightposition);

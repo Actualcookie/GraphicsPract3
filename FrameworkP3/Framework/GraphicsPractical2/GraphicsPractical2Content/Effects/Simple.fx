@@ -8,7 +8,7 @@
 
 float3 LightDirection;
 float4 DiffuseColor;
-float DiffuseStrength = 0.1;
+float DiffuseStrength = 0.2;
 //Variables Specular
 float SpecularPower;
 float SpecularIntensity;
