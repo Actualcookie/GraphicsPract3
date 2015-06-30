@@ -68,6 +68,8 @@ namespace GraphicsPractical2
             // Load the model and let it use the "CellShade" effect
             this.model = this.Content.Load<Model>("Models/Teapot");
             this.model.Meshes[0].MeshParts[0].Effect = effect;
+            Vector3 lightdirection = new Vector3(1, 1, 1);
+            effect.Parameters["LightDirection"].SetValue(lightdirection);
             
         }
 
@@ -96,9 +98,7 @@ namespace GraphicsPractical2
             this.camera.SetEffectParameters(effect);
 
             World = Matrix.CreateScale(10.0f);
-            Vector3 lightdirection = new Vector3(1, 1, 1);
-
-            effect.Parameters["LightDirection"].SetValue(lightdirection);
+           
 
             Matrix ITWorld = Matrix.Transpose(Matrix.Invert(World));
 

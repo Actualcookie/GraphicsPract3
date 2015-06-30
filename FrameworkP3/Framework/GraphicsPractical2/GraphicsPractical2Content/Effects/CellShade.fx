@@ -35,7 +35,7 @@ struct VertexShaderOutput
 float4 Discretization(VertexShaderOutput output)
 {
 	float4 color;
-
+	//find intensity and adjust until looks good
 		if (output.Intense*10 > 0.9)
 			color = float4(1.0, 1, 1, 1.0)*output.Color;
 		else if (output.Intense*10 > 0.3)
