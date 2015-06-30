@@ -24,7 +24,8 @@ namespace GraphicsPractical2
         // Model
         private Model model;
         private Material modelMaterial;
-
+        private Vector4[] lightPosition = new Vector4[5];
+        private Vector4[] diffuseColor= new Vector4[5];
         private Matrix World, ITWorld;
 
         public Game1()
@@ -70,9 +71,24 @@ namespace GraphicsPractical2
             this.model.Meshes[0].MeshParts[0].Effect = effect;
             Vector3 lightdirection = new Vector3(1, 1, 1);
             effect.Parameters["LightDirection"].SetValue(lightdirection);
-            
+            FillArray(lightPosition);
+            effect.Parameters["lightPosition"].SetValue(lightPosition);
+            FillArray(diffuseColor);
+            effect.Parameters["diffuseColor"].SetValue(diffuseColor); 
+
         }
 
+        public void FillArray(Vector4[] fill)
+        {   
+            Random r = new Random();
+
+            for(int i=0;i< fill.Length;i++)
+            {
+                Vector4 vary= new Vector4(r.Next(-1, 1),r.Next(-1, 1),r.Next(-1, 1),r.Next(-1, 1));
+                fill[i] = vary;             
+            }
+
+        }
         protected override void Update(GameTime gameTime)
         {
             float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
