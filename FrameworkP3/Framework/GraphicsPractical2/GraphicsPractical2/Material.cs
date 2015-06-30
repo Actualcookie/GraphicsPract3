@@ -47,7 +47,6 @@ namespace GraphicsPractical2
             AmbientIntensity = 0.2f;
             if (effect.Parameters["AmbientIntensity"] != null)
             effect.Parameters["AmbientIntensity"].SetValue(this.AmbientIntensity);
-=
             DiffuseColor = Color.Gray;
             if (effect.Parameters["DiffuseColor"] != null)
             effect.Parameters["DiffuseColor"].SetValue(this.DiffuseColor.ToVector4());

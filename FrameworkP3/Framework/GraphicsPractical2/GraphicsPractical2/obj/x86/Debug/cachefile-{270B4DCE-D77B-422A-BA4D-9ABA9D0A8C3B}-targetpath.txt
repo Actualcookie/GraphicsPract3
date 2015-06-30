@@ -1,5 +1,11 @@
 Content\Effects\Simple.xnb
 Content\Effects\CellShade.xnb
+Content\Effects\Grayscale.xnb
+Content\Effects\Spotlight.xnb
 Content\Models\Teapot.xnb
+Content\Models\bunny.xnb
 Content\Normal Maps\CobblestonesNormal.xnb
 Content\Textures\CobblestonesDiffuse.xnb
+Content\Models\femalehead.xnb
+Content\Font.xnb
+Content\Effects\Lights.xnb
