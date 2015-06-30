@@ -71,11 +71,6 @@ namespace GraphicsPractical2
             
         }
 
-        /// <summary>
-        /// Sets up a 2 by 2 quad around the origin.
-        /// </summary>
-  
-
         protected override void Update(GameTime gameTime)
         {
             float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
@@ -101,7 +96,7 @@ namespace GraphicsPractical2
             this.camera.SetEffectParameters(effect);
 
             World = Matrix.CreateScale(10.0f);
-            Vector3 lightdirection = new Vector3(-1, -1, -1);
+            Vector3 lightdirection = new Vector3(1, 1, 1);
 
             effect.Parameters["LightDirection"].SetValue(lightdirection);
 
