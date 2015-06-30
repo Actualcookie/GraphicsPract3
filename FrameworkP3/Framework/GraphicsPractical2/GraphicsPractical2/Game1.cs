@@ -81,8 +81,10 @@ namespace GraphicsPractical2
             Spotlight = this.Content.Load<Effect>("Effects/SpotLight");
             Simple = this.Content.Load<Effect>("Effects/Simple");
 
-            // Load the model and let it use the "CellShade" effect
-            this.model = this.Content.Load<Model>("Models/femalehead");
+            // Load the model
+            this.model = this.Content.Load<Model>("Models/bunny");
+
+            //fill the arrays used for multiple light sources
             FillArray(diffuseColor);
             FillArray(lightPosition);
 
@@ -105,9 +107,19 @@ namespace GraphicsPractical2
             // Matrices for 3D perspective projection
             this.camera.SetEffectParameters(effect);
 
-            World = Matrix.CreateScale(1);
-            Vector3 lightdirection = new Vector3(-1,-1, -1);
-            Vector3 lightposition = new Vector3(100, 0, 0);
+            World = Matrix.CreateScale(200);
+            Vector3 lightdirection, lightposition;
+            if (solution != 2)
+            {
+             lightdirection = new Vector3(-1,-1, -1);
+             lightposition = new Vector3(100, 0, 0);
+            }
+            else
+            {
+             lightdirection = new Vector3(-1,-1,-1);
+             lightposition = new Vector3(50, 5,0);
+            }
+            
 
             if (effect.Parameters["LightDirection"] != null)
             effect.Parameters["LightDirection"].SetValue(lightdirection);
@@ -145,6 +157,7 @@ namespace GraphicsPractical2
 
         protected override void Update(GameTime gameTime)
         {
+            //Set the effect depending on which is supposed to be shown
             switch (solution)
             {
                 case 0: modelMaterial.SetEffectParameters(Cell);
@@ -180,6 +193,7 @@ namespace GraphicsPractical2
             if (effect.Parameters["diffuseColors"] != null)
             effect.Parameters["diffuseColors"].SetValue(diffuseColor);
             
+            //user input
             oldState = newState;
             newState = Keyboard.GetState();
              float deltaAngle = 0;
@@ -202,7 +216,7 @@ namespace GraphicsPractical2
             //set the backbuffer to black
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            if (solution == 1)
+            if (solution == 1) // use the color filter effect
             {
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearClamp, DepthStencilState.Default,
                                RasterizerState.CullNone, Grayscale);
