@@ -71,10 +71,10 @@ namespace GraphicsPractical2
             this.model.Meshes[0].MeshParts[0].Effect = effect;
            /* Vector3 lightdirection = new Vector3(1, 1, 1);
             effect.Parameters["LightDirection"].SetValue(lightdirection);*/
-            FillArray(lightPosition);
+           /* FillArray(lightPosition);
             effect.Parameters["lightPosition"].SetValue(lightPosition);
             FillArray(diffuseColor);
-            effect.Parameters["diffuseColors"].SetValue(diffuseColor); 
+            effect.Parameters["diffuseColors"].SetValue(diffuseColor); */
         }
 
         public void FillArray(Vector4[] fill)
@@ -95,12 +95,12 @@ namespace GraphicsPractical2
             // Update the window title
             this.Window.Title = "XNA Renderer | FPS: " + this.frameRateCounter.FrameRate;
            //warning flashing lights for status checking only (and or disco parties involving tea)
-          /* ModelMesh mesh = this.model.Meshes[0];
+            ModelMesh mesh = this.model.Meshes[0];
             Effect effect = mesh.Effects[0];
             FillArray(lightPosition);
             effect.Parameters["lightPosition"].SetValue(lightPosition);
             FillArray(diffuseColor);
-            effect.Parameters["diffuseColors"].SetValue(diffuseColor); */
+            effect.Parameters["diffuseColors"].SetValue(diffuseColor); 
 
             base.Update(gameTime);
         }
