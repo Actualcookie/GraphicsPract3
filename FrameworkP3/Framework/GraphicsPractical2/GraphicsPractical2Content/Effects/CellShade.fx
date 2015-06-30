@@ -7,6 +7,8 @@
 float3 LightDirection;
 float4 DiffuseColor;
 float DiffuseStrength = 0.2;
+// we just played with this part until it looked good
+float IntensityAdjustment = 2;
 // Matrices for 3D perspective projection 
 float4x4 View, Projection, World, ITWorld;
 //---------------------------------- Input / Output structures ----------------------------------
@@ -32,11 +34,11 @@ float4 Discretization(VertexShaderOutput output)
 {
 	float4 color;
 	//find intensity and adjust until looks good
-		if (output.Intense*10 > 0.9)
+	if (output.Intense*IntensityAdjustment > 0.98)
 			color = float4(1.0, 1, 1, 1.0)*output.Color;
-		else if (output.Intense*10 > 0.3)
+	else if (output.Intense*IntensityAdjustment > 0.6)
 			color = float4(0.7, 0.7, 0.7, 1.0)*output.Color;
-		else if (output.Intense*10 > 0.01)
+	else if (output.Intense*IntensityAdjustment > 0.001)
 			color = float4(0.35, 0.35, 0.35, 1.0)*output.Color;
 		else
 			color = float4(0.1, 0.1, 0.1, 1.0)*output.Color;
