@@ -41,13 +41,13 @@ float4 Discretization(VertexShaderOutput output)
 	float4 color = output.Color;
 
 		if (output.Intense*10 > 0.8)
-			color = saturate(float4(1.0, 1, 1, 1.0)+output.Color);
+			color = float4(1.0, 1, 1, 1.0)+output.Color;
 		else if (output.Intense*10 > 0.3)
-			color = saturate(float4(0.7, 0.7, 0.7, 1.0)+output.Color);
+			color = float4(0.7, 0.7, 0.7, 1.0)+output.Color;
 		else if (output.Intense*10 > 0.01)
-			color = saturate(float4(0.35, 0.35, 0.35, 1.0)+output.Color);
+			color = float4(0.35, 0.35, 0.35, 1.0)+output.Color;
 		else
-			color = saturate(float4(0.1, 0.1, 0.1, 1.0)+output.Color);
+			color = float4(0.1, 0.1, 0.1, 1.0)+output.Color;
 		return color;
 }
 
@@ -79,18 +79,11 @@ float4 SimplePixelShader(VertexShaderOutput output) : COLOR0
 {
 	//discretization
 	float4 color = Discretization(output);
-
-	/*float3 light = (LightDirection);
-	float3 normal = normalize(output.TNormal);
-	float3 r = normalize(2 * dot(light, normal) * normal - light);
-	float3 v = normalize(mul(normalize(View), ITWorld));
-
-	float product = dot(r, v);
-	float4 Shiny = SpecularIntensity * SpecularColor * max(pow(abs(product), SpecularPower), 0) * length(output.Color);*/
-		return saturate(color);
+	//returns the correct color for every part
+		return color;
 }
 
-technique Simple
+technique Cell
 {
 	pass Pass0
 	{

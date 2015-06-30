@@ -91,7 +91,7 @@ namespace GraphicsPractical2
             Effect effect = mesh.Effects[0];
 
             // Set the effect parameters
-            effect.CurrentTechnique = effect.Techniques["Simple"];
+            effect.CurrentTechnique = effect.Techniques["Cell"];
             // Matrices for 3D perspective projection
             this.camera.SetEffectParameters(effect);
 
