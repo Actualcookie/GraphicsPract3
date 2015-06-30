@@ -1,0 +1,3 @@
+C:\Users\Timotheus Schut\Downloads\FrameworkP2\Framework\GraphicsPractical2\GraphicsPractical2Content\obj\x86\Debug\GraphicsPractical2Content.contentprojResolveAssemblyReference.cache
+C:\Users\Timotheus Schut\Documents\GitHub\GraphicsPract2\FrameworkP2\Framework\GraphicsPractical2\GraphicsPractical2Content\obj\x86\Debug\GraphicsPractical2Content.contentprojResolveAssemblyReference.cache
+C:\Users\Timotheus Schut\Documents\GitHub\GraphicsPract2 - kopie\FrameworkP3\Framework\GraphicsPractical2\GraphicsPractical2Content\obj\x86\Debug\GraphicsPractical2Content.contentprojResolveAssemblyReference.cache
