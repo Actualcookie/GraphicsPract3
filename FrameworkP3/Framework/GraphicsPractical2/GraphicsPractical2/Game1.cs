@@ -88,12 +88,39 @@ namespace GraphicsPractical2
             GraphicsDevice.SetRenderTarget(renderTarget);
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
-           /* Vector3 lightdirection = new Vector3(1, 1, 1);
-            effect.Parameters["LightDirection"].SetValue(lightdirection);*/
-           /* FillArray(lightPosition);
-            effect.Parameters["lightPosition"].SetValue(lightPosition);
-            FillArray(diffuseColor);
-            effect.Parameters["diffuseColors"].SetValue(diffuseColor); */
+
+            //Draw the model
+            ModelMesh mesh = this.model.Meshes[0];
+            Effect effect = mesh.Effects[0];
+
+            // Set the effect parameters
+            effect.CurrentTechnique = effect.Techniques["Simple"];
+            // Matrices for 3D perspective projection
+            this.camera.SetEffectParameters(effect);
+
+            World = Matrix.CreateScale(10.0f);
+            Vector3 lightdirection = new Vector3(-1, -1, -1);
+            Vector3 lightposition = new Vector3(50, 50, 50);
+
+            effect.Parameters["LightDirection"].SetValue(lightdirection);
+
+
+            if (effect.Parameters["LightPosition"] != null)
+                effect.Parameters["LightPosition"].SetValue(lightposition);
+
+            Matrix ITWorld = Matrix.Transpose(Matrix.Invert(World));
+
+            effect.Parameters["World"].SetValue(World);
+            effect.Parameters["ITWorld"].SetValue(ITWorld);
+
+            // Draw the model
+            mesh.Draw();
+
+            // Drop the render target
+            GraphicsDevice.SetRenderTarget(null);
+
+            // Return the texture in the render target
+            return renderTarget;
         }
 
         public void FillArray(Vector4[] fill)
@@ -117,51 +144,12 @@ namespace GraphicsPractical2
             ModelMesh mesh = this.model.Meshes[0];
             Effect effect = mesh.Effects[0];
             FillArray(lightPosition);
+            if (effect.Parameters["lightPosition"] != null)
             effect.Parameters["lightPosition"].SetValue(lightPosition);
+
             FillArray(diffuseColor);
-            effect.Parameters["diffuseColors"].SetValue(diffuseColor); 
-
-            //Draw the model
-            ModelMesh mesh = this.model.Meshes[0];
-            Effect effect = mesh.Effects[0];
-
-            // Set the effect parameters
-            effect.CurrentTechnique = effect.Techniques["Simple"];
-            // Matrices for 3D perspective projection
-            this.camera.SetEffectParameters(effect);
-
-            World = Matrix.CreateScale(10.0f);
-            Vector3 lightdirection = new Vector3(-1, -1, -1);
-            Vector3 lightposition = new Vector3(50,50, 50);
-
-            effect.Parameters["LightDirection"].SetValue(lightdirection);
-
-
-            if(effect.Parameters["LightPosition"] != null)
-            effect.Parameters["LightPosition"].SetValue(lightposition);
-
-            Matrix ITWorld = Matrix.Transpose(Matrix.Invert(World));
-
-            effect.Parameters["World"].SetValue(World);
-            effect.Parameters["ITWorld"].SetValue(ITWorld);
-
-            // Draw the model
-            mesh.Draw();
-
-            // Drop the render target
-            GraphicsDevice.SetRenderTarget(null);
-
-            // Return the texture in the render target
-            return renderTarget;
-        }
-
-        protected override void Update(GameTime gameTime)
-        {
-            float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
-
-            // Update the window title
-            this.Window.Title = "XNA Renderer | FPS: " + this.frameRateCounter.FrameRate;
-
+            if (effect.Parameters["diffuseColors"] != null)
+            effect.Parameters["diffuseColors"].SetValue(diffuseColor);
             base.Update(gameTime);
         }
 
