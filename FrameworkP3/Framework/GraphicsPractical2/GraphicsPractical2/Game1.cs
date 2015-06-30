@@ -17,10 +17,12 @@ namespace GraphicsPractical2
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private FrameRateCounter frameRateCounter;
+        RenderTarget2D renderTarget;
+        Effect postEffect;
 
         // Game objects and variables
         private Camera camera;
-        
+
         // Model
         private Model model;
         private Material modelMaterial;
@@ -55,20 +57,68 @@ namespace GraphicsPractical2
             this.IsMouseVisible = true;
 
             base.Initialize();
+
+
+            renderTarget = new RenderTarget2D( GraphicsDevice, GraphicsDevice.PresentationParameters.BackBufferWidth, 
+                GraphicsDevice.PresentationParameters.BackBufferHeight, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
         }
 
         protected override void LoadContent()
         {
             // Create a SpriteBatch object
             this.spriteBatch = new SpriteBatch(this.GraphicsDevice);
-            // Load the "CellShade" effect
-            Effect effect = this.Content.Load<Effect>("Effects/CellShade");
-           
+
+            // Load the effects
+            Effect effect = this.Content.Load<Effect>("Effects/Spotlight");
+            postEffect = this.Content.Load<Effect>("Effects/Grayscale");
+
             modelMaterial.SetEffectParameters(effect);
+
             // Load the model and let it use the "CellShade" effect
             this.model = this.Content.Load<Model>("Models/Teapot");
             this.model.Meshes[0].MeshParts[0].Effect = effect;
-            
+
+        }
+
+        //Draws the 3d scene to a texture
+        protected Texture2D CreateTexture(RenderTarget2D renderTarget)
+        {
+            // Set the render target
+            GraphicsDevice.SetRenderTarget(renderTarget);
+
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            //Draw the model
+            ModelMesh mesh = this.model.Meshes[0];
+            Effect effect = mesh.Effects[0];
+
+            // Set the effect parameters
+            effect.CurrentTechnique = effect.Techniques["Simple"];
+            // Matrices for 3D perspective projection
+            this.camera.SetEffectParameters(effect);
+
+            World = Matrix.CreateScale(10.0f);
+            Vector3 lightdirection = new Vector3(-1, -1, -1);
+            Vector3 lightposition = new Vector3(50,50, 50);
+
+            effect.Parameters["LightDirection"].SetValue(lightdirection);
+
+            if(effect.Parameters["LightPosition"] != null)
+            effect.Parameters["LightPosition"].SetValue(lightposition);
+
+            Matrix ITWorld = Matrix.Transpose(Matrix.Invert(World));
+
+            effect.Parameters["World"].SetValue(World);
+            effect.Parameters["ITWorld"].SetValue(ITWorld);
+
+            // Draw the model
+            mesh.Draw();
+
+            // Drop the render target
+            GraphicsDevice.SetRenderTarget(null);
+
+            // Return the texture in the render target
+            return renderTarget;
         }
 
         protected override void Update(GameTime gameTime)
@@ -83,30 +133,18 @@ namespace GraphicsPractical2
 
         protected override void Draw(GameTime gameTime)
         {
-            // Clear the screen in a predetermined color and clear the depth buffer
-            this.GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DeepSkyBlue, 1.0f, 0);
-            
-            // Get the model's only mesh
-            ModelMesh mesh = this.model.Meshes[0];
-            Effect effect = mesh.Effects[0];
+            Texture2D texture = CreateTexture(renderTarget);
+            //set the backbuffer to black
+            GraphicsDevice.Clear(Color.Black);
 
-            // Set the effect parameters
-            effect.CurrentTechnique = effect.Techniques["Simple"];
-            // Matrices for 3D perspective projection
-            this.camera.SetEffectParameters(effect);
 
-            World = Matrix.CreateScale(10.0f);
-            Vector3 lightdirection = new Vector3(1, 1, 1);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque,
+                SamplerState.LinearClamp, DepthStencilState.Default,
+                RasterizerState.CullNone);
 
-            effect.Parameters["LightDirection"].SetValue(lightdirection);
+            spriteBatch.Draw(texture, new Rectangle(0, 0, 800, 600), Color.White);
 
-            Matrix ITWorld = Matrix.Transpose(Matrix.Invert(World));
-
-            effect.Parameters["World"].SetValue(World);
-            effect.Parameters["ITWorld"].SetValue(ITWorld);
-            
-            // Draw the model
-            mesh.Draw();
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
