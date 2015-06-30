@@ -34,6 +34,11 @@ namespace GraphicsPractical2
         private Vector4[] diffuseColor= new Vector4[10];
         private Matrix World, ITWorld;
 
+        //Quad
+        private VertexPositionNormalTexture[] quadVertices;
+        private short[] quadIndices;
+        private Matrix quadTransform;
+
         public Game1()
         {
             this.graphics = new GraphicsDeviceManager(this);
@@ -83,9 +88,31 @@ namespace GraphicsPractical2
 
             // Load the model and let it use the "CellShade" effect
             this.model = this.Content.Load<Model>("Models/femalehead");
+            this.setupQuad();
             FillArray(diffuseColor);
             FillArray(lightPosition);
 
+        }
+
+        private void setupQuad()
+        {
+            float scale = 50.0f;
+
+            // Normal points up
+            Vector3 quadNormal = new Vector3(0, 1, 0);
+
+            this.quadVertices = new VertexPositionNormalTexture[4];
+            // Top left
+            this.quadVertices[0].Position = new Vector3(-100, -30f, -100);
+            // Top right
+            this.quadVertices[1].Position = new Vector3(100, -30f, -100);
+            // Bottom left
+            this.quadVertices[2].Position = new Vector3(-100, -30f, 100);
+            // Bottom right
+            this.quadVertices[3].Position = new Vector3(100, -30, 100);
+
+            this.quadIndices = new short[] { 0, 1, 2, 1, 2, 3 };
+            this.quadTransform = Matrix.CreateScale(scale);
         }
 
         //Draws the 3d scene to a texture
@@ -99,6 +126,11 @@ namespace GraphicsPractical2
             //Draw the model
             ModelMesh mesh = this.model.Meshes[0];
             Effect effect = mesh.Effects[0];
+            foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, quadVertices, 0, 4, quadIndices, 0, 2);
+            }
 
             // Set the effect parameters
             effect.CurrentTechnique = effect.Techniques["Simple"];
@@ -137,7 +169,7 @@ namespace GraphicsPractical2
             //generates a array of random variables which act as the light positions and the light colors
             for(int i=0;i< fill.Length;i++)
             {
-                Vector4 vary= new Vector4(r.Next(-20,15),r.Next(-20,15),r.Next(-15,25),r.Next(-20,15));
+                Vector4 vary= new Vector4(r.Next(-10,15),r.Next(-10,15),r.Next(-25,25),r.Next(15));
                 fill[i] = vary;             
             }
 
@@ -239,6 +271,7 @@ namespace GraphicsPractical2
 
                 default: break;
             }
+
 
             
             spriteBatch.End();
