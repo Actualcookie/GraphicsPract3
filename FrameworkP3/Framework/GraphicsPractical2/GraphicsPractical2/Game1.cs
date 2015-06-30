@@ -24,8 +24,8 @@ namespace GraphicsPractical2
         // Model
         private Model model;
         private Material modelMaterial;
-        private Vector4[] lightPosition = new Vector4[5];
-        private Vector4[] diffuseColor= new Vector4[5];
+        private Vector4[] lightPosition = new Vector4[10];
+        private Vector4[] diffuseColor= new Vector4[10];
         private Matrix World, ITWorld;
 
         public Game1()
@@ -63,28 +63,27 @@ namespace GraphicsPractical2
             // Create a SpriteBatch object
             this.spriteBatch = new SpriteBatch(this.GraphicsDevice);
             // Load the "CellShade" effect
-            Effect effect = this.Content.Load<Effect>("Effects/CellShade");
+            Effect effect = this.Content.Load<Effect>("Effects/Lights");
            
             modelMaterial.SetEffectParameters(effect);
             // Load the model and let it use the "CellShade" effect
             this.model = this.Content.Load<Model>("Models/Teapot");
             this.model.Meshes[0].MeshParts[0].Effect = effect;
-            Vector3 lightdirection = new Vector3(1, 1, 1);
-            effect.Parameters["LightDirection"].SetValue(lightdirection);
+           /* Vector3 lightdirection = new Vector3(1, 1, 1);
+            effect.Parameters["LightDirection"].SetValue(lightdirection);*/
             FillArray(lightPosition);
             effect.Parameters["lightPosition"].SetValue(lightPosition);
             FillArray(diffuseColor);
-            effect.Parameters["diffuseColor"].SetValue(diffuseColor); 
-
+            effect.Parameters["diffuseColors"].SetValue(diffuseColor); 
         }
 
         public void FillArray(Vector4[] fill)
         {   
             Random r = new Random();
-
+            //generates a array of random variables which act as the light positions and the light colors
             for(int i=0;i< fill.Length;i++)
             {
-                Vector4 vary= new Vector4(r.Next(-1, 1),r.Next(-1, 1),r.Next(-1, 1),r.Next(-1, 1));
+                Vector4 vary= new Vector4(r.Next(-20,15),r.Next(-20,15),r.Next(-15,25),r.Next(-20,15));
                 fill[i] = vary;             
             }
 
@@ -92,9 +91,16 @@ namespace GraphicsPractical2
         protected override void Update(GameTime gameTime)
         {
             float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
-
+            
             // Update the window title
             this.Window.Title = "XNA Renderer | FPS: " + this.frameRateCounter.FrameRate;
+           //warning flashing lights for status checking only (and or disco parties involving tea)
+          /* ModelMesh mesh = this.model.Meshes[0];
+            Effect effect = mesh.Effects[0];
+            FillArray(lightPosition);
+            effect.Parameters["lightPosition"].SetValue(lightPosition);
+            FillArray(diffuseColor);
+            effect.Parameters["diffuseColors"].SetValue(diffuseColor); */
 
             base.Update(gameTime);
         }
@@ -109,7 +115,7 @@ namespace GraphicsPractical2
             Effect effect = mesh.Effects[0];
 
             // Set the effect parameters
-            effect.CurrentTechnique = effect.Techniques["Cell"];
+            effect.CurrentTechnique = effect.Techniques["Simple"];
             // Matrices for 3D perspective projection
             this.camera.SetEffectParameters(effect);
 

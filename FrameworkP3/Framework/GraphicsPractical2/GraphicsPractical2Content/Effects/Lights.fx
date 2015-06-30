@@ -45,7 +45,11 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 
     return output;
 }
+//-------------------------------------------Functions-------------------------------------------------------------------------------
 
+
+
+//-----------------------------------------------------------------------------------------------------------------------------------
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
 	float lightIntensity1, lightIntensity2, lightIntensity3, lightIntensity4, lightIntensity5;
