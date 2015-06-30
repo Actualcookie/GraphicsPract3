@@ -17,7 +17,7 @@ namespace GraphicsPractical2
         KeyboardState newState, oldState;
         // Often used XNA objects
         int solution = 0;
-        //0 = cellshade, 1= greyscale, 2 = multilights, 3= spotlight
+        //0 = cellshade, 1= greyscale, 2 = spotlight, 3= multilight
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private FrameRateCounter frameRateCounter;
@@ -75,14 +75,16 @@ namespace GraphicsPractical2
             this.spriteBatch = new SpriteBatch(this.GraphicsDevice);
             Font = Content.Load<SpriteFont>("Font");
             // Load the effects
-            MultiLight= this.Content.Load<Effect>("Effects/Spotlight");
+            MultiLight= this.Content.Load<Effect>("Effects/Lights");
             Cell = this.Content.Load<Effect>("Effects/CellShade");
             Grayscale = this.Content.Load<Effect>("Effects/Grayscale");
-            Spotlight = this.Content.Load<Effect>("Effects/Spotlight");
+            Spotlight = this.Content.Load<Effect>("Effects/SpotLight");
             Simple = this.Content.Load<Effect>("Effects/Simple");
 
             // Load the model and let it use the "CellShade" effect
             this.model = this.Content.Load<Model>("Models/femalehead");
+            FillArray(diffuseColor);
+            FillArray(lightPosition);
 
         }
 
@@ -107,6 +109,7 @@ namespace GraphicsPractical2
             Vector3 lightdirection = new Vector3(-1,-1, -1);
             Vector3 lightposition = new Vector3(100, 0, 0);
 
+            if (effect.Parameters["LightDirection"] != null)
             effect.Parameters["LightDirection"].SetValue(lightdirection);
 
 
@@ -151,12 +154,12 @@ namespace GraphicsPractical2
                         this.model.Meshes[0].MeshParts[0].Effect = Simple;
                         break;
 
-                case 2: modelMaterial.SetEffectParameters(MultiLight);
-                        this.model.Meshes[0].MeshParts[0].Effect = MultiLight;
+                case 2: modelMaterial.SetEffectParameters(Spotlight);
+                        this.model.Meshes[0].MeshParts[0].Effect = Spotlight;
                         break;
 
-                case 3: modelMaterial.SetEffectParameters(Spotlight);
-                        this.model.Meshes[0].MeshParts[0].Effect = Spotlight;
+                case 3: modelMaterial.SetEffectParameters(MultiLight);
+                        this.model.Meshes[0].MeshParts[0].Effect = MultiLight;
                         break;
 
                 default: break;
@@ -169,29 +172,27 @@ namespace GraphicsPractical2
            //warning flashing lights for status checking only (and or disco parties involving tea)
             ModelMesh mesh = this.model.Meshes[0];
             Effect effect = mesh.Effects[0];
-            FillArray(lightPosition);
+
             if (effect.Parameters["lightPosition"] != null)
             effect.Parameters["lightPosition"].SetValue(lightPosition);
 
-            FillArray(diffuseColor);
+            
             if (effect.Parameters["diffuseColors"] != null)
             effect.Parameters["diffuseColors"].SetValue(diffuseColor);
             
             oldState = newState;
             newState = Keyboard.GetState();
+             float deltaAngle = 0;
 
-            if (newState.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
+             if (newState.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
                 solution = (solution + 1) % 4;
-
-            float deltaAngle = 0;
-
-
             if (newState.IsKeyDown(Keys.Left))
                 deltaAngle += -0.05f *timeStep;
             if (newState.IsKeyDown(Keys.Right))
                 deltaAngle += 0.05f* timeStep;
             if (deltaAngle != 0)
-                this.camera.Eye = Vector3.Transform(this.camera.Eye, Matrix.CreateRotationY(deltaAngle));
+                this.camera.Eye = Vector3.Transform(this.camera.Eye, Matrix.CreateRotationY(deltaAngle));
+
             base.Update(gameTime);
         }
 
