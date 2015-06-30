@@ -54,10 +54,10 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 	output.Position = mul(viewPosition, Projection);
 
 	
-	float3 LDirection = LightPosition - viewPosition;
+	float3 LDirection = LightPosition - viewPosition; //Calculate the direction of a ray coming out of the point light
 	output.LightDirect = LDirection;
 
-	float4 LNormal = mul(normalize(input.Normal), normalize(ITWorld));		   // multiply the normal with the Inverse Transposed World matrix, so that normals rotate with the model
+	float4 LNormal = mul((input.Normal), (ITWorld));		   // multiply the normal with the Inverse Transposed World matrix, so that normals rotate with the model
 	output.Normal = LNormal;
 
 	output.eye = -viewPosition;
@@ -67,23 +67,50 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 
 float4 SimplePixelShader(VertexShaderOutput input) : COLOR0
 {
+	float  outerConeAngle = 0.7;
+	float  innerConeAngle = 0.8;
+	float  difference = 0.1;
+
 	float4 finColor = (AmbientColor * AmbientIntensity);
 
-	float3 normal = normalize(input.Normal);
-	float3 light = normalize(input.LightDirect);
+		float3 normal = normalize(input.Normal);
+		float3 light = normalize(input.LightDirect);
+		float3 spotDirection = normalize(LightDirection);
 
-	float lambert = dot(normal, light);
+	if (dot(-light, spotDirection) > innerConeAngle) // If the lightray is within the inner cone, calculate light normally
+	{
+		float lambert = dot(normal, light); //dot product between normal and light
 
+		if (lambert > 0){
+			finColor += DiffuseStrength * DiffuseColor * lambert;
 
-		finColor += DiffuseStrength * DiffuseColor * lambert;
+			float3 Eye = normalize(input.eye);
+			float3 R = reflect(-light, normal);
+
+				float specular = pow(max(dot(R, Eye), 0.001), SpecularIntensity);
+
+			finColor += SpecularColor*specular;
+		}
+	}
+
+	else if (dot(-light, spotDirection) > outerConeAngle)
+	{
+		float falloff = (dot(-light, spotDirection) - outerConeAngle)/ difference;
+float lambert = dot(normal, light);
+
+	if (lambert > 0){
+		finColor += DiffuseStrength * DiffuseColor * lambert * falloff;
 
 		float3 Eye = normalize(input.eye);
-		float3 R = reflect(-light, normal);
+			float3 R = reflect(-light, normal);
 
-	//	float specular = pow(max(dot(R, Eye), 0.4f), SpecularIntensity);
+			float specular = pow(max(dot(R, Eye), 0.001), SpecularIntensity);
 
-	//	finColor += SpecularColor*specular;
+		finColor += SpecularColor*specular*falloff;
+	}
+
 	
+	}
 
 		return saturate(finColor);
 

@@ -13,12 +13,16 @@ namespace GraphicsPractical2
 {
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        SpriteFont Font;
+        KeyboardState newState, oldState;
         // Often used XNA objects
+        int solution = 0;
+        //0 = cellshade, 1= greyscale, 2 = multilights, 3= spotlight
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private FrameRateCounter frameRateCounter;
         RenderTarget2D renderTarget;
-        Effect postEffect;
+        Effect Cell, Grayscale, Spotlight, MultiLight, Simple;
 
         // Game objects and variables
         private Camera camera;
@@ -39,6 +43,7 @@ namespace GraphicsPractical2
             this.Components.Add(this.frameRateCounter);
         }
 
+        
         protected override void Initialize()
         {
             // Copy over the device's rasterizer state to change the current fillMode
@@ -68,16 +73,16 @@ namespace GraphicsPractical2
         {
             // Create a SpriteBatch object
             this.spriteBatch = new SpriteBatch(this.GraphicsDevice);
-
+            Font = Content.Load<SpriteFont>("Font");
             // Load the effects
-            Effect effect = this.Content.Load<Effect>("Effects/Spotlight");
-            postEffect = this.Content.Load<Effect>("Effects/Grayscale");
-
-            modelMaterial.SetEffectParameters(effect);
+            MultiLight= this.Content.Load<Effect>("Effects/Spotlight");
+            Cell = this.Content.Load<Effect>("Effects/CellShade");
+            Grayscale = this.Content.Load<Effect>("Effects/Grayscale");
+            Spotlight = this.Content.Load<Effect>("Effects/Spotlight");
+            Simple = this.Content.Load<Effect>("Effects/Simple");
 
             // Load the model and let it use the "CellShade" effect
-            this.model = this.Content.Load<Model>("Models/Teapot");
-            this.model.Meshes[0].MeshParts[0].Effect = effect;
+            this.model = this.Content.Load<Model>("Models/femalehead");
 
         }
 
@@ -98,9 +103,9 @@ namespace GraphicsPractical2
             // Matrices for 3D perspective projection
             this.camera.SetEffectParameters(effect);
 
-            World = Matrix.CreateScale(10.0f);
-            Vector3 lightdirection = new Vector3(-1, -1, -1);
-            Vector3 lightposition = new Vector3(50, 50, 50);
+            World = Matrix.CreateScale(1);
+            Vector3 lightdirection = new Vector3(-1,-1, -1);
+            Vector3 lightposition = new Vector3(100, 0, 0);
 
             effect.Parameters["LightDirection"].SetValue(lightdirection);
 
@@ -134,8 +139,29 @@ namespace GraphicsPractical2
             }
 
         }
+
         protected override void Update(GameTime gameTime)
         {
+            switch (solution)
+            {
+                case 0: modelMaterial.SetEffectParameters(Cell);
+                        this.model.Meshes[0].MeshParts[0].Effect = Cell;
+                        break;
+                case 1: modelMaterial.SetEffectParameters(Simple);
+                        this.model.Meshes[0].MeshParts[0].Effect = Simple;
+                        break;
+
+                case 2: modelMaterial.SetEffectParameters(MultiLight);
+                        this.model.Meshes[0].MeshParts[0].Effect = MultiLight;
+                        break;
+
+                case 3: modelMaterial.SetEffectParameters(Spotlight);
+                        this.model.Meshes[0].MeshParts[0].Effect = Spotlight;
+                        break;
+
+                default: break;
+            }
+
             float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
             
             // Update the window title
@@ -150,6 +176,22 @@ namespace GraphicsPractical2
             FillArray(diffuseColor);
             if (effect.Parameters["diffuseColors"] != null)
             effect.Parameters["diffuseColors"].SetValue(diffuseColor);
+            
+            oldState = newState;
+            newState = Keyboard.GetState();
+
+            if (newState.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
+                solution = (solution + 1) % 4;
+
+            float deltaAngle = 0;
+
+
+            if (newState.IsKeyDown(Keys.Left))
+                deltaAngle += -0.05f *timeStep;
+            if (newState.IsKeyDown(Keys.Right))
+                deltaAngle += 0.05f* timeStep;
+            if (deltaAngle != 0)
+                this.camera.Eye = Vector3.Transform(this.camera.Eye, Matrix.CreateRotationY(deltaAngle));
             base.Update(gameTime);
         }
 
@@ -157,15 +199,47 @@ namespace GraphicsPractical2
         {
             Texture2D texture = CreateTexture(renderTarget);
             //set the backbuffer to black
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            if (solution == 1)
+            {
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearClamp, DepthStencilState.Default,
+                               RasterizerState.CullNone, Grayscale);
+            }
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque,
-                SamplerState.LinearClamp, DepthStencilState.Default,
-                RasterizerState.CullNone);
-
+            else
+            {
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearClamp, DepthStencilState.Default,
+                               RasterizerState.CullNone);
+            }
+           
             spriteBatch.Draw(texture, new Rectangle(0, 0, 800, 600), Color.White);
 
+
+            switch (solution)
+            {
+                case 0:
+                    spriteBatch.DrawString(Font, "Cellshading", Vector2.Zero, Color.White);
+                    spriteBatch.DrawString(Font, "Press Left or Right to rotate model", new Vector2(0, 20), Color.White); 
+                    spriteBatch.DrawString(Font, "Press Space to change solution", new Vector2(0,40), Color.White); break;
+                case 1: 
+                    spriteBatch.DrawString(Font, "GrayScale", Vector2.Zero, Color.White); 
+                    spriteBatch.DrawString(Font, "Press Left or Right to rotate model", new Vector2(0, 20), Color.White);
+                    spriteBatch.DrawString(Font, "Press Space to change solution", new Vector2(0, 40), Color.White); break;
+                case 2:
+                    spriteBatch.DrawString(Font, "Spolight", Vector2.Zero, Color.White);
+                    spriteBatch.DrawString(Font, "Press Left or Right to rotate model", new Vector2(0, 20), Color.White);
+                    spriteBatch.DrawString(Font, "Press Space to change solution", new Vector2(0, 40), Color.White); break;
+
+                case 3:
+                    spriteBatch.DrawString(Font, "Multiple Lights", Vector2.Zero, Color.White);
+                    spriteBatch.DrawString(Font, "Press Left or Right to rotate model", new Vector2(0, 20), Color.White);
+                    spriteBatch.DrawString(Font, "Press Space to change solution", new Vector2(0, 40), Color.White); break;
+
+                default: break;
+            }
+
+            
             spriteBatch.End();
 
             base.Draw(gameTime);
