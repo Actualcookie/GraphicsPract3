@@ -44,10 +44,10 @@ namespace GraphicsPractical2
            /* AmbientColor = Color.Red ;            
             effect.Parameters["AmbientColor"].SetValue(this.AmbientColor.ToVector4());
             AmbientIntensity = 0.2f;
-            effect.Parameters["AmbientIntensity"].SetValue(this.AmbientIntensity);
-            DiffuseColor = Color.Red;
+            effect.Parameters["AmbientIntensity"].SetValue(this.AmbientIntensity);*/
+            DiffuseColor = Color.Gray;
             effect.Parameters["DiffuseColor"].SetValue(this.DiffuseColor.ToVector4());
-            effect.Parameters["DiffuseTexture"].SetValue(this.DiffuseTexture);
+           /* effect.Parameters["DiffuseTexture"].SetValue(this.DiffuseTexture);
             effect.Parameters["NormalMap"].SetValue(this.NormalMap);
             effect.Parameters["DisplacementFactor"].SetValue(this.DisplacementFactor);
             SpecularColor = Color.White;
